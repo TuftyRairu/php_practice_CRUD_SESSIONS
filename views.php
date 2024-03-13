@@ -163,6 +163,24 @@ class Views
                 }
             }
 
+            if ($_SERVER["REQUEST_METHOD"] == "PUT" && $_SERVER["REQUEST_URI"] == "/disableUser?{$key}={$value}") {
+                if ($_SESSION["roleid"] != 1 && $_SESSION["roleid"] != 2) {
+                    http_response_code(401);
+                    $message->success = false;
+                    $message->message = "invalid access!";
+                    echo json_encode($message, JSON_PRETTY_PRINT);
+                } else if ($_SESSION["roleid"] == 1) {
+                    $admin->disable_user($key, $value, $message);
+                } else if ($_SESSION["roleid"] == 2) {
+                    $faculty->disable_student($key, $value, $message);
+                } else {
+                    http_response_code(401);
+                    $message->success = false;
+                    $message->message = "error desu wa!";
+                    echo json_encode($message, JSON_PRETTY_PRINT);
+                }
+            }
+
             if ($_SERVER["REQUEST_METHOD"] == "DELETE" && $_SERVER["REQUEST_URI"] == "/deleteRole?{$key}={$value}") {
                 if ($_SESSION["roleid"] != 1) {
                     http_response_code(401);

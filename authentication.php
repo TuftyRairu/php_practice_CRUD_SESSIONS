@@ -27,14 +27,14 @@ class Authentication extends Connection
 
     public function login($username, $password, $message)
     {
-        $sql = "SELECT * FROM users_table WHERE username = '{$username}' AND password = '{$password}'";
+        $sql = "SELECT * FROM users_table WHERE username = '{$username}' AND password = '{$password}' AND status = 1";
 
         $exe = $this->connection->query($sql);
 
         if ($exe) {
             $user = $exe->fetch_assoc();
 
-            if ($user) {
+            if ($user["status"] == 1) {
                 $updatesql = "UPDATE users_table SET is_logged_in = 1 WHERE userid = '{$user["userid"]}'";
                 $exeupdate = $this->connection->query($updatesql);
 
@@ -44,6 +44,11 @@ class Authentication extends Connection
 
                 $message->success = true;
                 $message->message = "Hello {$user["username"]}, you logged in successfully!";
+                echo json_encode($message, JSON_PRETTY_PRINT);
+            } else if ($user["status"] == 0) {
+                http_response_code(400);
+                $message->success = false;
+                $message->message = "this account have been disabled!";
                 echo json_encode($message, JSON_PRETTY_PRINT);
             } else {
                 http_response_code(400);

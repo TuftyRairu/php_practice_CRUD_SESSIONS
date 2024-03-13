@@ -123,6 +123,42 @@ class FacultyController extends Connection
             echo json_encode($message, JSON_PRETTY_PRINT);
         }
     }
+    public function disable_student($key, $value, $message)
+    {
+        if (is_string($value)) {
+            $checksql = "SELECT * FROM users_table WHERE {$key} = '{$value}'";
+        } else {
+            $checksql = "SELECT * FROM users_table WHERE {$key} = {$value}";
+        }
+        $checkexe = $this->connection->query($checksql);
+        $check = $checkexe->fetch_assoc();
+
+        if ($check["roleid"] == 3) {
+            if (is_string($value)) {
+                $sql = "UPDATE users_table SET status = 0 WHERE {$key} = '{$value}' AND roleid = 3";
+            } else {
+                $sql = "UPDATE users_table SET status = 0 WHERE {$key} = {$value} AND roleid = 3";
+            }
+
+            $exe = $this->connection->query($sql);
+
+            if ($exe == 1) {
+                $message->success = true;
+                $message->message = "student disabled successfully!";
+                echo json_encode($message, JSON_PRETTY_PRINT);
+            } else {
+                http_response_code(400);
+                $message->success = false;
+                $message->message = "error desu wa!";
+                echo json_encode($message, JSON_PRETTY_PRINT);
+            }
+        } else {
+            http_response_code(400);
+            $message->success = false;
+            $message->message = "not a student account!";
+            echo json_encode($message, JSON_PRETTY_PRINT);
+        }
+    }
     public function update_faculty_password($userid, $password, $newpassword, $message)
     {
         $checkexistsql = "SELECT * FROM users_table WHERE userid = {$userid}";

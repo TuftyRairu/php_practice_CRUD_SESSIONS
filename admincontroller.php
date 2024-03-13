@@ -145,6 +145,27 @@ class AdminController extends Connection
             echo json_encode($message, JSON_PRETTY_PRINT);
         }
     }
+    public function disable_user($key, $value, $message)
+    {
+        if (is_string($value)) {
+            $sql = "UPDATE users_table SET status = 0 WHERE {$key} = '{$value}'";
+        } else {
+            $sql = "UPDATE users_table SET status = 0 WHERE {$key} = {$value}";
+        }
+
+        $exe = $this->connection->query($sql);
+
+        if ($exe == 1) {
+            $message->success = true;
+            $message->message = "user disabled successfully!";
+            echo json_encode($message, JSON_PRETTY_PRINT);
+        } else {
+            http_response_code(400);
+            $message->success = false;
+            $message->message = "error desu wa!";
+            echo json_encode($message, JSON_PRETTY_PRINT);
+        }
+    }
     public function create_role($roleid, $role, $description, $message)
     {
         $sql = "INSERT INTO roles_table (roleid, role, description) VALUES ('{$roleid}', '{$role}', '{$description}')";
