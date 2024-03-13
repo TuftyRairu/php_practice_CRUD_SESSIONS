@@ -86,6 +86,21 @@ class Views
             } else {
                 $admin->get_users($message);
             }
+        } else if ($_SERVER["REQUEST_METHOD"] == "PUT" && $_SERVER["REQUEST_URI"] == "/changeRole") {
+            $cred = file_get_contents("php://input");
+
+            $json = json_decode($cred, true);
+
+            if ($json) {
+                if ($_SESSION["roleid"] != 1) {
+                    http_response_code(401);
+                    $message->success = "false";
+                    $message->message = "invalid access!";
+                    echo json_encode($message, JSON_PRETTY_PRINT);
+                } else {
+                    $admin->update_user_role($json["userid"], $json["roleid"], $message);
+                }
+            }
         }
         foreach ($_GET as $key => $value) {
             if ($_SERVER["REQUEST_METHOD"] == "GET" && $_SERVER["REQUEST_URI"] == "/getUser?{$key}={$value}") {

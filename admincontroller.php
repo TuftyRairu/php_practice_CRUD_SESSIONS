@@ -17,6 +17,7 @@ class AdminController extends Connection
             $message->message = "user created successfully!";
             echo json_encode($message, JSON_PRETTY_PRINT);
         } else {
+            http_response_code(400);
             $message->success = false;
             $message->message = "error desu wa!";
             echo json_encode($message, JSON_PRETTY_PRINT);
@@ -64,6 +65,7 @@ class AdminController extends Connection
             $message->message = "there's no data in the database yet desu!";
             echo json_encode($message, JSON_PRETTY_PRINT);
         } else {
+            http_response_code(400);
             $message->success = false;
             $message->message = "error desu wa!";
             echo json_encode($message, JSON_PRETTY_PRINT);
@@ -110,6 +112,7 @@ class AdminController extends Connection
             $message->users = $a;
             echo json_encode($message, JSON_PRETTY_PRINT);
         } else {
+            http_response_code(400);
             $message->success = false;
             $message->message = "error desu wa!";
             echo json_encode($message, JSON_PRETTY_PRINT);
@@ -131,6 +134,7 @@ class AdminController extends Connection
             $message->message = "user deleted successfully!";
             echo json_encode($message, JSON_PRETTY_PRINT);
         } else {
+            http_response_code(400);
             $message->success = false;
             $message->message = "error desu wa!";
             echo json_encode($message, JSON_PRETTY_PRINT);
@@ -147,6 +151,7 @@ class AdminController extends Connection
             $message->message = "role created successfully!";
             echo json_encode($message, JSON_PRETTY_PRINT);
         } else {
+            http_response_code(400);
             $message->success = false;
             $message->message = "error desu wa!";
             echo json_encode($message, JSON_PRETTY_PRINT);
@@ -167,8 +172,38 @@ class AdminController extends Connection
             $message->message = "role deleted successfully!";
             echo json_encode($message, JSON_PRETTY_PRINT);
         } else {
+            http_response_code(400);
             $message->success = false;
             $message->message = "error desu wa!";
+            echo json_encode($message, JSON_PRETTY_PRINT);
+        }
+    }
+
+    public function update_user_role($userid, $roleid, $message)
+    {
+        $checkexistsql = "SELECT * FROM users_table WHERE userid = {$userid}";
+        $checkexe = $this->connection->query($checkexistsql);
+        $exist = $checkexe->fetch_assoc();
+
+        if ($exist["roleid"] != 1) {
+            $sql = "UPDATE users_table SET roleid = {$roleid} WHERE userid = '{$userid}'";
+
+            $exe = $this->connection->query($sql);
+
+            if ($exe == 1) {
+                $message->success = true;
+                $message->message = "role changed successfully!";
+                echo json_encode($message, JSON_PRETTY_PRINT);
+            } else {
+                http_response_code(400);
+                $message->success = false;
+                $message->message = "error desu wa!";
+                echo json_encode($message, JSON_PRETTY_PRINT);
+            }
+        } else {
+            http_response_code(400);
+            $message->success = false;
+            $message->message = "user id used is not valid to change role!";
             echo json_encode($message, JSON_PRETTY_PRINT);
         }
     }
