@@ -8,7 +8,7 @@ class AdminController extends Connection
 
     public function create_user($username, $password, $roleid, $status, $message)
     {
-        $sql = "INSERT INTO users_table (username, password, roleid, status) VALUES ('{$username}', '{$password}','{$roleid}', '{$status}')";
+        $sql = "INSERT INTO users_table (username, password, roleid, status) VALUES ('{$username}', '{$password}','{$roleid}', {$status})";
 
         $exe = $this->connection->query($sql);
 
@@ -25,7 +25,7 @@ class AdminController extends Connection
     }
     public function get_users($message)
     {
-        $sql = "SELECT * FROM users_table WHERE roleid != 1";
+        $sql = "SELECT * FROM users_table";
 
         $exe = $this->connection->query($sql);
 
@@ -110,6 +110,11 @@ class AdminController extends Connection
             $message->success = true;
             $message->message = "user ghetto dazze!";
             $message->users = $a;
+            echo json_encode($message, JSON_PRETTY_PRINT);
+        } else if ($exe->num_rows == 0) {
+            http_response_code(400);
+            $message->success = false;
+            $message->message = "there's no data in the database yet desu!";
             echo json_encode($message, JSON_PRETTY_PRINT);
         } else {
             http_response_code(400);
