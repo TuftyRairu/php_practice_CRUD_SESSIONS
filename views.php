@@ -2,6 +2,7 @@
 require_once 'authentication.php';
 require_once 'admincontroller.php';
 require_once 'facultycontroller.php';
+require_once 'studentcontroller.php';
 class Views
 {
     public function __construct()
@@ -11,6 +12,7 @@ class Views
         $auth = new Authentication();
         $admin = new AdminController();
         $faculty = new FacultyController();
+        $student = new StudentController();
 
         $message = new stdClass();
 
@@ -123,13 +125,20 @@ class Views
             $json = json_decode($cred, true);
 
             if ($json) {
-                if ($_SESSION["roleid"] != 2) {
+                if ($_SESSION["roleid"] != 2 && $_SESSION["roleid"] != 3) {
                     http_response_code(401);
                     $message->success = false;
                     $message->message = "invalid access!";
                     echo json_encode($message, JSON_PRETTY_PRINT);
-                } else {
+                } else if ($_SESSION["roleid"] == 2) {
                     $faculty->update_faculty_password($_SESSION["userid"], $json["password"], $json["new-password"], $message);
+                } else if ($_SESSION["roleid"] == 3) {
+                    $student->update_student_password($_SESSION["userid"], $json["password"], $json["new-password"], $message);
+                } else {
+                    http_response_code(401);
+                    $message->success = false;
+                    $message->message = "error desu wa!";
+                    echo json_encode($message, JSON_PRETTY_PRINT);
                 }
             }
         }
